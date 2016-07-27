@@ -15,14 +15,13 @@ let pingpong = net.createServer();
 pingpong.on('connection', (client) => {
 	client.name = client.remoteAddress + ':' + client.remotePort;
 	console.log(client.name + ' is connected.');
-	client.write('Hello ' + client.name + '\n');
 
 	client
 		.on('data', (data) => {
 			if (data == '<policy-file-request/>\0') {
 				console.log('Good request. Sending file to ' + client.remoteAddress + '.');
+				client.end(policyFile);
 				console.log('成功建立连接');
-				client.end(policyFile + '\0');
 			} else {
 				client.write('res:' + data);
 				console.log('[GET]', data.toString());
