@@ -1,7 +1,14 @@
 let net = require('net');
 let fs = require('fs');
 
-let policyFile = fs.readFileSync('./xmlsocket.xml');
+let policyFile =
+	'<?xml version="1.0"?>' +
+	'<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">' +
+	'<cross-domain-policy>' +
+	'<allow-access-from domain="*" to-ports="*" />' +
+	'</cross-domain-policy>';
+
+console.log(policyFile);
 
 let pingpong = net.createServer();
 
@@ -14,6 +21,7 @@ pingpong.on('connection', (client) => {
 		.on('data', (data) => {
 			if (data == '<policy-file-request/>\0') {
 				console.log('Good request. Sending file to ' + client.remoteAddress + '.');
+				console.log('成功建立连接');
 				client.end(policyFile + '\0');
 			} else {
 				client.write('res:' + data);
