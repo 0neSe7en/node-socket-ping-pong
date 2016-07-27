@@ -1,4 +1,7 @@
 let net = require('net');
+let fs = require('fs');
+
+let policyFile = fs.readFileSync('./xmlsocket.xml');
 
 let pingpong = net.createServer();
 
@@ -9,8 +12,13 @@ pingpong.on('connection', (client) => {
 
 	client
 		.on('data', (data) => {
-			client.write('res:' + data);
-			console.log('[GET]', data.toString());
+			if (data == '<policy-file-request/>\0') {
+				console.log('Good request. Sending file to ' + client.remoteAddress + '.');
+				client.end(policyFile + '\0');
+			} else {
+				client.write('res:' + data);
+				console.log('[GET]', data.toString());
+			}
 		})
 		.on('end', () => {
 			console.log(client.name + ' disconnected...');
